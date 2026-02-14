@@ -1,0 +1,161 @@
+/* CrossPoint Reader Web Emulator Styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+#emulator-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+h1 {
+  font-size: 1.4em;
+  font-weight: 400;
+  color: #aaa;
+}
+
+#device-frame {
+  position: relative;
+  background: #1a1a1a;
+  border: 3px solid #444;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+#display {
+  display: block;
+  background: #f5f0e8; /* E-ink paper color */
+  border: 1px solid #888;
+  image-rendering: pixelated;
+  /* Scale to be comfortable on desktop */
+  width: 360px;
+  height: 600px;
+}
+
+/* Front buttons row (below display) */
+#buttons-front {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 12px;
+  gap: 8px;
+}
+
+/* Side buttons (right side of device) */
+#buttons-side {
+  position: absolute;
+  right: -48px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hw-btn {
+  width: 44px;
+  height: 44px;
+  border: 2px solid #555;
+  border-radius: 50%;
+  background: #333;
+  color: #ccc;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, transform 0.05s;
+  user-select: none;
+}
+
+.hw-btn:hover {
+  background: #444;
+  border-color: #777;
+}
+
+.hw-btn:active,
+.hw-btn.pressed {
+  background: #555;
+  transform: scale(0.95);
+}
+
+.side-btn {
+  width: 36px;
+  height: 56px;
+  border-radius: 8px;
+}
+
+#controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 450px;
+}
+
+#keyboard-help {
+  font-size: 0.85em;
+  color: #888;
+  text-align: center;
+}
+
+#file-upload {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#file-upload label {
+  font-size: 0.9em;
+  color: #aaa;
+}
+
+#file-upload input[type="file"] {
+  color: #ccc;
+  font-size: 0.85em;
+}
+
+#status-bar {
+  font-size: 0.8em;
+  color: #666;
+}
+
+/* Responsive: smaller screens */
+@media (max-width: 600px) {
+  #display {
+    width: 240px;
+    height: 400px;
+  }
+
+  #buttons-side {
+    right: -40px;
+  }
+
+  .hw-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .side-btn {
+    width: 30px;
+    height: 48px;
+  }
+}
