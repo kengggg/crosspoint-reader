@@ -11,7 +11,7 @@ const statusText = document.getElementById('status-text');
 
 // Render 1-bit framebuffer to canvas.
 // The framebuffer is in physical panel orientation (800x480 landscape).
-// We rotate 90° CCW to display as portrait (480x800) on the canvas,
+// We rotate 90° CW to display as portrait (480x800) on the canvas,
 // matching how the real X4 panel is physically mounted.
 Module.renderFramebuffer = function(bufPtr, width, height, mode) {
   const widthBytes = width / 8;
@@ -24,15 +24,16 @@ Module.renderFramebuffer = function(bufPtr, width, height, mode) {
   const imageData = ctx.createImageData(canvasW, canvasH);
   const pixels = imageData.data;
 
-  // 90° CCW rotation: canvas(cx, cy) = buffer(cy, width-1-cx)
+  // 90° CW rotation: inverse of GfxRenderer's portrait mapping
+  // GfxRenderer Portrait: phyX=logY, phyY=(H-1)-logX
+  // Inverse: canvasX=(H-1)-bufY, canvasY=bufX
   for (let bufY = 0; bufY < height; bufY++) {
     for (let xByte = 0; xByte < widthBytes; xByte++) {
       const byte = buf[bufY * widthBytes + xByte];
       for (let bit = 0; bit < 8; bit++) {
         const bufX = xByte * 8 + bit;
-        // Rotate 90° CCW: bufX,bufY → canvasX=bufY, canvasY=width-1-bufX
-        const cx = bufY;
-        const cy = (width - 1) - bufX;
+        const cx = (height - 1) - bufY;
+        const cy = bufX;
         const idx = (cy * canvasW + cx) * 4;
         // E-ink: 1 = white, 0 = black (MSB first)
         const isWhite = (byte >> (7 - bit)) & 1;
@@ -55,7 +56,7 @@ Module.renderFramebuffer = function(bufPtr, width, height, mode) {
 };
 
 // Render 2-bit grayscale framebuffer (LSB + MSB planes)
-// Same 90° CCW rotation as renderFramebuffer.
+// Same 90° CW rotation as renderFramebuffer.
 Module.renderGrayscale = function(lsbPtr, msbPtr, width, height) {
   const bufSize = (width / 8) * height;
   const lsb = Module.HEAPU8.subarray(lsbPtr, lsbPtr + bufSize);
@@ -73,8 +74,8 @@ Module.renderGrayscale = function(lsbPtr, msbPtr, width, height) {
       const msbByte = msb[bufY * widthBytes + xByte];
       for (let bit = 0; bit < 8; bit++) {
         const bufX = xByte * 8 + bit;
-        const cx = bufY;
-        const cy = (width - 1) - bufX;
+        const cx = (height - 1) - bufY;
+        const cy = bufX;
         const idx = (cy * canvasW + cx) * 4;
         const lsbBit = (lsbByte >> (7 - bit)) & 1;
         const msbBit = (msbByte >> (7 - bit)) & 1;
