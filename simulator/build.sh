@@ -29,8 +29,25 @@ info()  { echo -e "${GREEN}[INFO]${NC} $*"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC} $*"; }
 error() { echo -e "${RED}[ERROR]${NC} $*"; exit 1; }
 
-# Check for Emscripten
+# Check for Emscripten — try to auto-detect if not already in PATH
 check_emscripten() {
+  if ! command -v emcmake &> /dev/null; then
+    # Try common emsdk locations relative to this repo
+    local search_paths=(
+      "${SCRIPT_DIR}/../../emsdk"
+      "${SCRIPT_DIR}/../emsdk"
+      "${HOME}/emsdk"
+      "/opt/emsdk"
+    )
+    for p in "${search_paths[@]}"; do
+      if [ -f "$p/emsdk_env.sh" ]; then
+        warn "emcmake not in PATH, sourcing $p/emsdk_env.sh"
+        source "$p/emsdk_env.sh" 2>/dev/null
+        break
+      fi
+    done
+  fi
+
   if ! command -v emcmake &> /dev/null; then
     error "Emscripten not found! Please install and activate emsdk first.
 
@@ -39,7 +56,11 @@ check_emscripten() {
     cd emsdk
     ./emsdk install latest
     ./emsdk activate latest
-    source ./emsdk_env.sh"
+    source ./emsdk_env.sh
+
+  Then either:
+    a) Run 'source <path-to-emsdk>/emsdk_env.sh' before ./build.sh
+    b) Place emsdk alongside the crosspoint-reader repo (../emsdk/)"
   fi
   info "Emscripten found: $(emcc --version | head -1)"
 }
@@ -69,7 +90,7 @@ build() {
   info "Build complete!"
   info ""
   info "Output files in: ${BUILD_DIR}/"
-  info "  crosspoint.html  — Main HTML page"
+  info "  index.html       — Main HTML page"
   info "  crosspoint.js    — Emscripten glue code"
   info "  crosspoint.wasm  — WebAssembly binary"
   info "  shell.js         — Simulator UI logic"

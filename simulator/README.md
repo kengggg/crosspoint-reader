@@ -51,7 +51,7 @@ From the `simulator/` directory:
 ```
 
 This produces files in `simulator/build/`:
-- `crosspoint.html` — Open this in your browser
+- `index.html` — Open this in your browser
 - `crosspoint.js` — Emscripten runtime
 - `crosspoint.wasm` — Compiled firmware
 
@@ -64,7 +64,7 @@ cd simulator/build
 python3 -m http.server 8080
 ```
 
-2. Open `http://localhost:8080/crosspoint.html` in your browser.
+2. Open `http://localhost:8080` in your browser.
 
 3. **Upload an EPUB**: Use the file picker to load a `.epub` file into the simulator's virtual filesystem.
 
