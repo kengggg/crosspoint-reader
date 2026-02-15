@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CrossPoint Reader — Web Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="simulator-container">
+    <h1>CrossPoint Reader Simulator</h1>
+
+    <div id="device-frame">
+      <canvas id="display" width="480" height="800"></canvas>
+
+      <!-- Button overlays matching X4 physical layout -->
+      <div id="buttons-front">
+        <button class="hw-btn" data-btn="0" title="Back (Escape)">&#9664;</button>
+        <button class="hw-btn" data-btn="1" title="Confirm (Enter)">&#10004;</button>
+        <button class="hw-btn" data-btn="2" title="Left (ArrowLeft)">&#9668;</button>
+        <button class="hw-btn" data-btn="3" title="Right (ArrowRight)">&#9658;</button>
+      </div>
+      <div id="buttons-side">
+        <button class="hw-btn side-btn" data-btn="4" title="Up / PageBack (ArrowUp)">&#9650;</button>
+        <button class="hw-btn side-btn" data-btn="5" title="Down / PageForward (ArrowDown)">&#9660;</button>
+      </div>
+    </div>
+
+    <div id="controls">
+      <div id="keyboard-help">
+        <strong>Keyboard:</strong>
+        Esc=Back &nbsp; Enter=Confirm &nbsp; ←→=Left/Right &nbsp; ↑↓=Up/Down &nbsp; P=Power
+      </div>
+      <div id="file-upload">
+        <label for="epub-file">Load EPUB:</label>
+        <input type="file" id="epub-file" accept=".epub,.txt,.xtc,.xtch">
+      </div>
+    </div>
+
+    <div id="status-bar">
+      <span id="status-text">Loading...</span>
+    </div>
+  </div>
+
+  <script src="shell.js"></script>
+  <script src="crosspoint.js"></script>
+</body>
+</html>
