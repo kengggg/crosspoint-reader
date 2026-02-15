@@ -42,6 +42,8 @@
     </div>
   </div>
 
+  <!-- Pre-define Module so shell.js can attach callbacks before Emscripten loads -->
+  <script>var Module = {};</script>
   <script src="shell.js"></script>
   <script src="crosspoint.js"></script>
 </body>
