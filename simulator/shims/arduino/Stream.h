@@ -39,6 +39,16 @@ class Stream : public Print {
     return ret;
   }
 
+  String readStringUntil(char terminator) {
+    String ret;
+    int c = read();
+    while (c >= 0 && c != terminator) {
+      ret += static_cast<char>(c);
+      c = read();
+    }
+    return ret;
+  }
+
  protected:
   unsigned long timeout_ = 1000;
 };

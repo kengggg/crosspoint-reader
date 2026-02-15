@@ -149,6 +149,7 @@ set(FW_LIB
   ${FW}/lib/Epub/Epub/hyphenation/Hyphenator.cpp
   ${FW}/lib/Epub/Epub/hyphenation/LanguageRegistry.cpp
   ${FW}/lib/Epub/Epub/hyphenation/LiangHyphenation.cpp
+  ${FW}/lib/Epub/Epub/htmlEntities.cpp
   ${FW}/lib/Epub/Epub/parsers/ChapterHtmlSlimParser.cpp
   ${FW}/lib/Epub/Epub/parsers/ContainerParser.cpp
   ${FW}/lib/Epub/Epub/parsers/ContentOpfParser.cpp

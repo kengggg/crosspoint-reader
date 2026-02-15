@@ -153,7 +153,7 @@ class FsFile : public Stream {
   void getName(char* buf, size_t size) const { strncpy(buf, name_, size); }
   const char* name() const { return name_; }
 
-  void flush() {
+  void flush() override {
     if (fp_) fflush(fp_);
   }
 
