@@ -8,9 +8,11 @@
 
 class EInkDisplay {
  public:
-  // Display dimensions matching XTeink X4 hardware
-  static constexpr uint16_t DISPLAY_WIDTH = 480;
-  static constexpr uint16_t DISPLAY_HEIGHT = 800;
+  // Physical panel dimensions matching XTeink X4 hardware.
+  // The raw panel is landscape (800x480). The firmware's GfxRenderer
+  // rotates logical portrait (480x800) coordinates to these physical coords.
+  static constexpr uint16_t DISPLAY_WIDTH = 800;
+  static constexpr uint16_t DISPLAY_HEIGHT = 480;
   static constexpr uint16_t DISPLAY_WIDTH_BYTES = DISPLAY_WIDTH / 8;
   static constexpr uint32_t BUFFER_SIZE = DISPLAY_WIDTH_BYTES * DISPLAY_HEIGHT;
 

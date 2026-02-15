@@ -9,25 +9,34 @@ const canvas = document.getElementById('display');
 const ctx = canvas.getContext('2d');
 const statusText = document.getElementById('status-text');
 
-// Render 1-bit framebuffer to canvas
-// buf: pointer into WASM heap, width/height: pixels, mode: refresh type
+// Render 1-bit framebuffer to canvas.
+// The framebuffer is in physical panel orientation (800x480 landscape).
+// We rotate 90° CCW to display as portrait (480x800) on the canvas,
+// matching how the real X4 panel is physically mounted.
 Module.renderFramebuffer = function(bufPtr, width, height, mode) {
   const widthBytes = width / 8;
   const bufSize = widthBytes * height;
   const buf = Module.HEAPU8.subarray(bufPtr, bufPtr + bufSize);
 
-  const imageData = ctx.createImageData(width, height);
+  // Canvas is portrait: 480 wide x 800 tall
+  const canvasW = canvas.width;   // 480
+  const canvasH = canvas.height;  // 800
+  const imageData = ctx.createImageData(canvasW, canvasH);
   const pixels = imageData.data;
 
-  for (let y = 0; y < height; y++) {
+  // 90° CCW rotation: canvas(cx, cy) = buffer(cy, width-1-cx)
+  for (let bufY = 0; bufY < height; bufY++) {
     for (let xByte = 0; xByte < widthBytes; xByte++) {
-      const byte = buf[y * widthBytes + xByte];
+      const byte = buf[bufY * widthBytes + xByte];
       for (let bit = 0; bit < 8; bit++) {
-        const x = xByte * 8 + bit;
-        const idx = (y * width + x) * 4;
+        const bufX = xByte * 8 + bit;
+        // Rotate 90° CCW: bufX,bufY → canvasX=bufY, canvasY=width-1-bufX
+        const cx = bufY;
+        const cy = (width - 1) - bufX;
+        const idx = (cy * canvasW + cx) * 4;
         // E-ink: 1 = white, 0 = black (MSB first)
         const isWhite = (byte >> (7 - bit)) & 1;
-        const gray = isWhite ? 245 : 10; // Slightly off-white/black for e-ink look
+        const gray = isWhite ? 245 : 10;
         pixels[idx + 0] = gray;
         pixels[idx + 1] = gray;
         pixels[idx + 2] = gray;
@@ -46,25 +55,29 @@ Module.renderFramebuffer = function(bufPtr, width, height, mode) {
 };
 
 // Render 2-bit grayscale framebuffer (LSB + MSB planes)
+// Same 90° CCW rotation as renderFramebuffer.
 Module.renderGrayscale = function(lsbPtr, msbPtr, width, height) {
   const bufSize = (width / 8) * height;
   const lsb = Module.HEAPU8.subarray(lsbPtr, lsbPtr + bufSize);
   const msb = Module.HEAPU8.subarray(msbPtr, msbPtr + bufSize);
 
-  const imageData = ctx.createImageData(width, height);
+  const canvasW = canvas.width;
+  const canvasH = canvas.height;
+  const imageData = ctx.createImageData(canvasW, canvasH);
   const pixels = imageData.data;
   const widthBytes = width / 8;
 
-  for (let y = 0; y < height; y++) {
+  for (let bufY = 0; bufY < height; bufY++) {
     for (let xByte = 0; xByte < widthBytes; xByte++) {
-      const lsbByte = lsb[y * widthBytes + xByte];
-      const msbByte = msb[y * widthBytes + xByte];
+      const lsbByte = lsb[bufY * widthBytes + xByte];
+      const msbByte = msb[bufY * widthBytes + xByte];
       for (let bit = 0; bit < 8; bit++) {
-        const x = xByte * 8 + bit;
-        const idx = (y * width + x) * 4;
+        const bufX = xByte * 8 + bit;
+        const cx = bufY;
+        const cy = (width - 1) - bufX;
+        const idx = (cy * canvasW + cx) * 4;
         const lsbBit = (lsbByte >> (7 - bit)) & 1;
         const msbBit = (msbByte >> (7 - bit)) & 1;
-        // 2-bit grayscale: 00=black, 01=dark gray, 10=light gray, 11=white
         const level = (msbBit << 1) | lsbBit;
         const grayValues = [10, 85, 170, 245];
         const gray = grayValues[level];
