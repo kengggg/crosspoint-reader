@@ -57,6 +57,9 @@ Module.renderFramebuffer = function(bufPtr, width, height, mode) {
 
 // Render 2-bit grayscale framebuffer (LSB + MSB planes)
 // Same 90° CW rotation as renderFramebuffer.
+// On real e-ink hardware, the grayscale update only modifies pixels with non-zero
+// gray levels. Level 0 (both planes = 0) means "no change" — the BW content is kept.
+// Level 3 = dark gray (anti-aliased edges near text), Level 2 = light gray (edges near bg).
 Module.renderGrayscale = function(lsbPtr, msbPtr, width, height) {
   const bufSize = (width / 8) * height;
   const lsb = Module.HEAPU8.subarray(lsbPtr, lsbPtr + bufSize);
@@ -64,28 +67,34 @@ Module.renderGrayscale = function(lsbPtr, msbPtr, width, height) {
 
   const canvasW = canvas.width;
   const canvasH = canvas.height;
-  const imageData = ctx.createImageData(canvasW, canvasH);
+  // Read existing BW canvas content so we can merge grayscale on top
+  const imageData = ctx.getImageData(0, 0, canvasW, canvasH);
   const pixels = imageData.data;
   const widthBytes = width / 8;
+
+  // Gray values: level 0 = no change, level 2 = light gray, level 3 = dark gray
+  const grayValues = [0, 120, 180, 80];
 
   for (let bufY = 0; bufY < height; bufY++) {
     for (let xByte = 0; xByte < widthBytes; xByte++) {
       const lsbByte = lsb[bufY * widthBytes + xByte];
       const msbByte = msb[bufY * widthBytes + xByte];
+      // Skip bytes where both planes are 0 (no gray pixels)
+      if (lsbByte === 0 && msbByte === 0) continue;
       for (let bit = 0; bit < 8; bit++) {
+        const lsbBit = (lsbByte >> (7 - bit)) & 1;
+        const msbBit = (msbByte >> (7 - bit)) & 1;
+        const level = (msbBit << 1) | lsbBit;
+        // Level 0 = no update, keep existing BW pixel
+        if (level === 0) continue;
         const bufX = xByte * 8 + bit;
         const cx = (height - 1) - bufY;
         const cy = bufX;
         const idx = (cy * canvasW + cx) * 4;
-        const lsbBit = (lsbByte >> (7 - bit)) & 1;
-        const msbBit = (msbByte >> (7 - bit)) & 1;
-        const level = (msbBit << 1) | lsbBit;
-        const grayValues = [10, 85, 170, 245];
         const gray = grayValues[level];
         pixels[idx + 0] = gray;
         pixels[idx + 1] = gray;
         pixels[idx + 2] = gray;
-        pixels[idx + 3] = 255;
       }
     }
   }
