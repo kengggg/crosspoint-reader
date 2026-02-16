@@ -566,16 +566,6 @@ void EpubReaderActivity::renderScreen() {
   }
 
   if (!section) {
-    // Validate that the selected reader font is registered before attempting to load/build.
-    // If the font is missing (e.g. OMIT_FONTS build), fall back to Bookerly to avoid
-    // silent zero-height layout failures that produce corrupted section caches.
-    if (!renderer.hasFont(SETTINGS.getReaderFontId())) {
-      LOG_ERR("ERS", "Reader font %d not registered - resetting to default", SETTINGS.getReaderFontId());
-      SETTINGS.fontFamily = CrossPointSettings::BOOKERLY;
-      SETTINGS.fontSize = CrossPointSettings::MEDIUM;
-      SETTINGS.saveToFile();
-    }
-
     const auto filepath = epub->getSpineItem(currentSpineIndex).href;
     LOG_DBG("ERS", "Loading file: %s, index: %d", filepath.c_str(), currentSpineIndex);
     section = std::unique_ptr<Section>(new Section(epub, currentSpineIndex, renderer));
@@ -653,10 +643,7 @@ void EpubReaderActivity::renderScreen() {
       LOG_ERR("ERS", "Failed to load page from SD - clearing section cache");
       section->clearCache();
       section.reset();
-      // Signal the display loop to retry on the next tick instead of recursing.
-      // Unbounded recursion here previously caused stack overflow on the 8KB display task.
-      updateRequired = true;
-      return;
+      return renderScreen();
     }
     const auto start = millis();
     renderContents(std::move(p), orientedMarginTop, orientedMarginRight, orientedMarginBottom, orientedMarginLeft);

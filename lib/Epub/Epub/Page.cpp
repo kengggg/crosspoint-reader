@@ -52,13 +52,6 @@ std::unique_ptr<Page> Page::deserialize(FsFile& file) {
   uint16_t count;
   serialization::readPod(file, count);
 
-  // Guard against corrupted caches or mega-pages caused by zero-height font layout.
-  // A normal page has at most ~60 lines; 500 is a generous upper bound.
-  if (count > 500) {
-    LOG_ERR("PGE", "Deserialization failed: element count %u exceeds maximum", count);
-    return nullptr;
-  }
-
   for (uint16_t i = 0; i < count; i++) {
     uint8_t tag;
     serialization::readPod(file, tag);

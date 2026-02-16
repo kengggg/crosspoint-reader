@@ -597,11 +597,6 @@ bool ChapterHtmlSlimParser::parseAndBuildPages() {
 void ChapterHtmlSlimParser::addLineToPage(std::shared_ptr<TextBlock> line) {
   const int lineHeight = renderer.getLineHeight(fontId) * lineCompression;
 
-  if (lineHeight <= 0) {
-    LOG_ERR("EHP", "Invalid line height (%d) for font %d - skipping line", lineHeight, fontId);
-    return;
-  }
-
   if (currentPageNextY + lineHeight > viewportHeight) {
     completePageFn(std::move(currentPage));
     currentPage.reset(new Page());
@@ -626,11 +621,6 @@ void ChapterHtmlSlimParser::makePages() {
   }
 
   const int lineHeight = renderer.getLineHeight(fontId) * lineCompression;
-
-  if (lineHeight <= 0) {
-    LOG_ERR("EHP", "Invalid line height (%d) for font %d - aborting page layout", lineHeight, fontId);
-    return;
-  }
 
   // Apply top spacing before the paragraph (stored in pixels)
   const BlockStyle& blockStyle = currentTextBlock->getBlockStyle();
