@@ -44,9 +44,12 @@ h1 {
   background: #f5f0e8; /* E-ink paper color */
   border: 1px solid #888;
   image-rendering: pixelated;
-  /* Scale to be comfortable on desktop */
-  width: 360px;
-  height: 600px;
+  /* Display at native canvas resolution (480x800) for clean 1:1 pixel mapping.
+     Non-integer CSS scale factors (e.g. 0.75x) cause nearest-neighbor artifacts
+     with image-rendering:pixelated — the cursor highlight appears doubled due to
+     alternating thick/thin pixel rows on high-DPR displays. */
+  width: 480px;
+  height: 800px;
 }
 
 /* Front buttons row (below display) */
@@ -107,7 +110,7 @@ h1 {
   align-items: center;
   gap: 8px;
   width: 100%;
-  max-width: 450px;
+  max-width: 520px;
 }
 
 #keyboard-help {
@@ -137,7 +140,7 @@ h1 {
   color: #666;
 }
 
-/* Responsive: smaller screens */
+/* Responsive: smaller screens — use 0.5x integer scale (240x400) */
 @media (max-width: 600px) {
   #display {
     width: 240px;
