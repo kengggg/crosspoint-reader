@@ -19,7 +19,7 @@ add_definitions(
   -DXML_GE=0
   -DXML_CONTEXT_BYTES=1024
   -DUSE_UTF8_LONG_NAMES=1
-  -DOMIT_FONTS=1
+  -DOMIT_FONTS=0
 )
 # CROSSPOINT_VERSION needs special quoting to survive CMake → compiler
 add_compile_definitions(CROSSPOINT_VERSION="web-simulator")
