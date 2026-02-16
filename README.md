@@ -70,6 +70,23 @@ back to the other partition using the "Swap boot partition" button here https://
 
 See [Development](#development) below.
 
+## Web Simulator
+
+CrossPoint includes a **browser-based simulator** that compiles the exact same firmware code to WebAssembly via Emscripten. This lets you test the full reading experience in a browser — no hardware required.
+
+- Renders to an HTML `<canvas>` instead of the e-ink panel
+- Keyboard and on-screen buttons replace physical buttons
+- Upload EPUBs via file picker into an in-memory filesystem
+- Network features (WiFi upload, OTA, OPDS) are not available in the simulator
+
+```bash
+# Requires Emscripten SDK (emsdk) — see simulator/README.md for setup
+cd simulator/
+./build.sh serve    # Build + open at localhost:8080
+```
+
+See [`simulator/README.md`](simulator/README.md) for full build instructions, architecture details, and keyboard controls.
+
 ## Development
 
 ### Prerequisites
